@@ -37,6 +37,22 @@ def send_request(request_id):
                 "error": "Empty response",
             }
 
+        if response.startswith(b"ERROR: 503"):
+            return {
+                "id": request_id,
+                "latency": elapsed,
+                "success": False,
+                "error": "Rejected: server overloaded (503)",
+            }
+
+        if not response.startswith(b"OK "):
+            return {
+                "id": request_id,
+                "latency": elapsed,
+                "success": False,
+                "error": f"Unexpected response: {response!r}",
+            }
+
         return {
             "id": request_id,
             "latency": elapsed,
